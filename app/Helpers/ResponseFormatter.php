@@ -21,6 +21,7 @@ class ResponseFormatter
     
     public static function error($data = null, $message = null, $code = 400)
     {
+        self::$response['success'] = false;
         self::$response['message'] = $message;
         self::$response['data'] = $data;
 

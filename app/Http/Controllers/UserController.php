@@ -6,7 +6,6 @@ use App\Models\User;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
-use Illuminate\Support\Facades\Hash;
 use SebastianBergmann\Timer\Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,7 +17,7 @@ class UserController extends Controller
 
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-			'email' => 'required', 'string', 'email', 'max:255', 'unique:users',
+			'email' => 'email|required|unique:users,email',
 			'password' => 'required',
 			'role' => 'required',
 			'phone' => 'required',
@@ -26,6 +25,14 @@ class UserController extends Controller
 		]);
 
 		if ($validator->fails()) {
+            if ($validator->messages('email')->first() == 'The email has already been taken.') {
+                return ResponseFormatter::error(
+                    null,
+                    'Email already registered',
+                    500
+                );
+            }
+
             return ResponseFormatter::validatorFailed();
         }
 
@@ -35,14 +42,14 @@ class UserController extends Controller
                 'email' => $request->email,
                 'role' => $request->role,
                 'phone' => $request->phone,
-                'password' => Hash::make($request->password),
+                'password' => md5($request->password),
             ]);
     
             $user = User::where('email', $request->email)->first();
             
             return ResponseFormatter::success(
                 $user,
-                'User registration success'
+                'User registration successful'
             );
         } catch (Exception $error) {
             return ResponseFormatter::error(
@@ -54,7 +61,34 @@ class UserController extends Controller
     }
 
     public function login(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'password' => 'required',
+		]);
+		
+		if ($validator->fails()) {
+			return ResponseFormatter::validatorFailed();
+        }
+        
+        $userRegistered = User::where([
+			'email' => $request->email,
+			'password' => md5($request->password)
+		])->first();
+		if (!$userRegistered) {
+			return ResponseFormatter::error(
+                null,
+                'Invalid email or password',
+                401
+            );
+        }
 
+        return ResponseFormatter::success(
+            [
+                'detail' => $userRegistered,
+                'token' => $this->jwt($userRegistered)
+            ],
+            'Login successful'
+        );
     }
 
     public function forgot(Request $request) {
