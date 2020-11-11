@@ -16,3 +16,20 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix' => 'v1/auth'], function () use ($router) {
+    $router->post('register', ['uses' => 'UserController@register']);
+    $router->post('login', ['uses' => 'UserController@login']);
+    $router->post('forgot-password', ['uses' => 'UserController@forgot']);
+});
+
+// $router->group(['prefix' => 'v1/event'], function () use ($router) {
+//     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+//         $router->post('', ['uses' => 'ClassesController@classdetail']);
+//         $router->get('', ['uses' => 'ClassesController@classmember']);
+//         $router->get('/{event_id}}', ['uses' => 'ClassesController@enroll']);
+//         $router->post('/candidate/apply', ['uses' => 'ClassesController@exit']);
+//         $router->get('/candidates', ['uses' => 'ClassesController@delete']);
+//         $router->get('/candidate/accept', ['uses' => 'ClassesController@delete']);
+//     });
+// });
