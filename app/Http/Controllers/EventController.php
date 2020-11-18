@@ -16,6 +16,20 @@ class EventController extends Controller
         
     }
 
+    public function get(Request $request) {
+        $user_id = $request->input('user_id');
+
+        $event = Event::query();
+        if ($user_id) {
+            $event->where('created_by', $user_id);
+        }
+
+        return ResponseFormatter::success(
+            $event->get(),
+            'Event list fetch completed'
+        );
+    }
+
     public function create(Request $request) {
         // return $request->all();
         $validator = Validator::make($request->all(), [
