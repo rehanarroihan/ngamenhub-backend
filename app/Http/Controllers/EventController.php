@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
@@ -16,18 +17,19 @@ class EventController extends Controller
     }
 
     public function create(Request $request) {
+        // return $request->all();
         $validator = Validator::make($request->all(), [
 			'name' => 'required',
 			'description' => 'required',
 			'type' => 'required',
-			'date' => 'required',
+			'date' => 'required|date_format:Y-m-d H:i:s',
 			'fee' => 'required',
 			'address' => 'required',
-			'photo_url' => 'required',
+			'photo_urls' => 'required',
         ]);
         
         if ($validator->fails()) {
-			return ResponseFormatter::validatorFailed();
+			return ResponseFormatter::error($validator->errors()->all(), $request->all());
         }
 
         try {
@@ -39,7 +41,7 @@ class EventController extends Controller
                 'fee' => $request->fee,
                 'address' => $request->address,
                 'created_by' => $request->user->id,
-                'photo_url' => $request->photo_url,
+                'photo_urls' => $request->photo_urls,
             ]);
             
             return ResponseFormatter::success(
@@ -56,17 +58,31 @@ class EventController extends Controller
     }
 
     public function upload(Request $request) {
-        $file_ary = array();
-        $file_count = count($request->file('image') );
-        $a = ($request->file('image'));
-        $finalArray=array();
-        $file_count;
-        for ($i=0; $i < $file_count; $i++) {
-            $fileName = time().$a[$i]->getClientOriginalName();
-            $destinationPath = 'assets/event';
-            $finalArray[$i]['image'] = $destinationPath.$fileName;
-            $a[$i]->move(storage_path($destinationPath), $fileName);
+        if (!is_array($request->file('image'))) {
+            return ResponseFormatter::validatorFailed();
         }
-       return json_encode(storage_path());
+
+        try {
+            $file_count = count($request->file('image'));
+            $a = ($request->file('image'));
+            $finalArray = array();
+            for ($i=0; $i < $file_count; $i++) {
+                $fileName = time().$a[$i]->getClientOriginalName();
+                $destinationPath = 'upload/event';
+                $finalArray[$i] = $fileName;
+                $a[$i]->move(storage_path($destinationPath), $fileName);
+            }
+
+            return ResponseFormatter::success(
+                $finalArray,
+                'File upload successful'
+            );
+        } catch (Exception $error) {
+            return ResponseFormatter::error(
+                null,
+                $error,
+                500
+            );
+        }
     }
 }

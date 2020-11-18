@@ -13,7 +13,11 @@ class Event extends Model
         'date',
         'fee',
         'address',
-        'photo_url',
+        'photo_urls',
         'created_by'
+    ];
+
+    protected $casts = [
+        'photo_urls' => 'array'
     ];
 }

@@ -21,7 +21,7 @@ class CreateEventsTable extends Migration
             $table->timestamp('date');
             $table->string('fee');
             $table->string('address');
-            $table->string('photo_url');
+            $table->json('photo_urls')->nullable();
             $table->integer('created_by');
             $table->timestamps();
         });
