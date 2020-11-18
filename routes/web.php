@@ -33,3 +33,7 @@ $router->group(['prefix' => 'v1/event'], function () use ($router) {
         $router->get('/candidate/accept', ['uses' => 'ClassesController@delete']); */
     });
 });
+
+$router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+    $router->post('v1/upload', ['uses' => 'EventController@upload']);
+});

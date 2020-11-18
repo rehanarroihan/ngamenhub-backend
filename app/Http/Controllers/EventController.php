@@ -54,4 +54,19 @@ class EventController extends Controller
             );
         }
     }
+
+    public function upload(Request $request) {
+        $file_ary = array();
+        $file_count = count($request->file('image') );
+        $a = ($request->file('image'));
+        $finalArray=array();
+        $file_count;
+        for ($i=0; $i < $file_count; $i++) {
+            $fileName = time().$a[$i]->getClientOriginalName();
+            $destinationPath = 'assets/event';
+            $finalArray[$i]['image'] = $destinationPath.$fileName;
+            $a[$i]->move(storage_path($destinationPath), $fileName);
+        }
+       return json_encode(storage_path());
+    }
 }
