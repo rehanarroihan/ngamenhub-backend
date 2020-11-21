@@ -30,6 +30,16 @@ class EventController extends Controller
         );
     }
 
+    public function detail(Request $request, $event_id) {
+        $result = Event::where([
+			'id' => $event_id
+		])->first();
+        return ResponseFormatter::success(
+            $result,
+            'Get event detail completed'
+        );
+    }
+
     public function create(Request $request) {
         // return $request->all();
         $validator = Validator::make($request->all(), [

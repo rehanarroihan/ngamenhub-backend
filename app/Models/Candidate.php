@@ -1,5 +1,7 @@
 <?php
-namespace App;
+namespace App\Models;
+
+use App\Models\Event;
 use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
@@ -10,4 +12,8 @@ class Candidate extends Model
         'event_id',
         'status',
     ];
+
+    public function article(){
+    	return $this->belongsTo(Event::class);
+    }
 }

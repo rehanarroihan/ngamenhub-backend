@@ -26,6 +26,7 @@ $router->group(['prefix' => 'v1/auth'], function () use ($router) {
 $router->group(['prefix' => 'v1/event'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
         $router->get('', ['uses' => 'EventController@get']);
+        $router->get('{event_id}', ['uses' => 'EventController@detail']);
         $router->post('', ['uses' => 'EventController@create']);
         $router->post('photos', ['uses' => 'EventController@upload']);
         /* $router->get('/{event_id}}', ['uses' => 'ClassesController@enroll']);

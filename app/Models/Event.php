@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+
+use App\Models\Candidate;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
@@ -20,4 +22,8 @@ class Event extends Model
     protected $casts = [
         'photo_urls' => 'array'
     ];
+
+    public function candidates() {
+        return $this->hasMany(Candidate::class, 'id_event', 'id');
+    }
 }
