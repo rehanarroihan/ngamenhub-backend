@@ -16,4 +16,20 @@ class Candidate extends Model
     public function event(){
     	return $this->belongsTo(Event::class);
     }
+
+    protected $appends = ['full_name', 'email'];
+
+    protected $hidden = ['userDetail'];
+
+    public function getFullNameAttribute() {
+        return $this->userDetail->full_name;
+    }
+
+    public function getEmailAttribute() {
+        return $this->userDetail->email;
+    }
+
+    public function userDetail() {
+        return $this->belongsTo(User::class,'user_id');
+    }
 }

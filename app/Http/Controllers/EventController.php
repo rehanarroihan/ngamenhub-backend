@@ -144,7 +144,7 @@ class EventController extends Controller
 
             return ResponseFormatter::success(
                 $application,
-                'User aplied event successfully'
+                'User applied event successfully'
             );
         } catch (Exception $error) {
             return ResponseFormatter::error(null, $error, 500);
