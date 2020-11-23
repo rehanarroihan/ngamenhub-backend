@@ -35,3 +35,10 @@ $router->group(['prefix' => 'v1/event'], function () use ($router) {
         $router->get('/candidate/accept', ['uses' => 'ClassesController@delete']); */
     });
 });
+
+$router->group(['prefix' => 'v1/maps'], function () use ($router) {
+    $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->get('autocomplete', ['uses' => 'MapsApiController@autocomplete']);
+        $router->get('detail/{place_id}', ['uses' => 'MapsApiController@detail']);
+    });
+});
