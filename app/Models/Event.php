@@ -24,7 +24,15 @@ class Event extends Model
         'address' => 'array'
     ];
 
+    protected $with = ['candidates'];
+
+    protected $appends = ['candidate_count'];
+
+    public function getCandidateCountAttribute() {
+        return count($this->candidates);
+    }
+
     public function candidates() {
-        return $this->hasMany(Candidate::class, 'id_event', 'id');
+        return $this->hasMany(Candidate::class, 'event_id', 'id');
     }
 }

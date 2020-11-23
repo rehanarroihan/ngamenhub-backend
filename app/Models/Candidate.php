@@ -13,7 +13,7 @@ class Candidate extends Model
         'status',
     ];
 
-    public function article(){
+    public function event(){
     	return $this->belongsTo(Event::class);
     }
 }
