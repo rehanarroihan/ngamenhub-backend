@@ -29,8 +29,8 @@ $router->group(['prefix' => 'v1/event'], function () use ($router) {
         $router->get('{event_id}', ['uses' => 'EventController@detail']);
         $router->post('', ['uses' => 'EventController@create']);
         $router->post('photos', ['uses' => 'EventController@upload']);
+        $router->post('/candidate/apply', ['uses' => 'EventController@apply']);
         /* $router->get('/{event_id}}', ['uses' => 'ClassesController@enroll']);
-        $router->post('/candidate/apply', ['uses' => 'ClassesController@exit']);
         $router->get('/candidates', ['uses' => 'ClassesController@delete']);
         $router->get('/candidate/accept', ['uses' => 'ClassesController@delete']); */
     });

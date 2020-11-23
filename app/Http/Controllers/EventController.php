@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use App\Models\Candidate;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -107,6 +108,46 @@ class EventController extends Controller
                 $error,
                 500
             );
+        }
+    }
+
+    public function apply(Request $request) {
+        $validator = Validator::make($request->all(), [
+			'event_id' => 'required'
+        ]);
+        
+        if ($validator->fails()) {
+			return ResponseFormatter::validatorFailed();
+        }
+
+        // Checking event availability
+        $event = Event::find($request->event_id);
+        if (!$event) {
+            return ResponseFormatter::error(null, 'Event not found', 500);
+        }
+
+        // Checking duplication
+        $application = Candidate::where('user_id', $request->user->id)
+                    ->where('event_id', $request->event_id)
+                    ->first();
+
+        if ($application) {
+            return ResponseFormatter::error(null, 'User already applied before', 500);
+        }
+        
+        try {
+            $application = Candidate::create([
+                'user_id' => $request->user->id,
+                'event_id' => $request->event_id,
+                'status' => '0'
+            ]);
+
+            return ResponseFormatter::success(
+                $application,
+                'User aplied event successfully'
+            );
+        } catch (Exception $error) {
+            return ResponseFormatter::error(null, $error, 500);
         }
     }
 }
