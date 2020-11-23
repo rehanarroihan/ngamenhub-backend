@@ -20,7 +20,8 @@ class Event extends Model
     ];
 
     protected $casts = [
-        'photo_urls' => 'array'
+        'photo_urls' => 'array',
+        'address' => 'array'
     ];
 
     public function candidates() {
