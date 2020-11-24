@@ -48,4 +48,9 @@ $router->group(['prefix' => 'v1/transaction'], function () use ($router) {
     });
 });
 
-$router->post('v1/transaction/callback', ['uses' => 'TransactionController@callback']);
+$router->group(['prefix' => 'v1/transaction'], function () use ($router) {
+    $router->post('callback', ['uses' => 'TransactionController@callback']); 
+    $router->get('success', ['uses' => 'TransactionController@success']); 
+    $router->get('unfinish', ['uses' => 'TransactionController@unfinish']); 
+    $router->get('error', ['uses' => 'TransactionController@error']); 
+});

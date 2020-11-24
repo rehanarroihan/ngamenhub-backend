@@ -131,4 +131,16 @@ class TransactionController extends Controller
 
         $transaction->save();
     }
+
+    public function success() {
+        return 'Payment successful';
+    }
+
+    public function unfinish() {
+        return 'Payment unfinish';
+    }
+
+    public function error() {
+        return 'Payment error';
+    }
 }
