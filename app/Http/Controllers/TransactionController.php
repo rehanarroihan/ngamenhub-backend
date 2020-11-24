@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use Midtrans\Snap;
-use App\Models\User;
 use Midtrans\Config;
+use Midtrans\Snap;
+use Midtrans\Notification;
+use App\Models\User;
 use App\Models\Event;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Notification;
 
 class TransactionController extends Controller
 {
@@ -107,7 +107,7 @@ class TransactionController extends Controller
         $fraud = $notification->fraud_status;
         $order_id = $notification->order_id;
 
-        $transaction = Transaction::findOrFail($order_id);
+        $transaction = Transaction::where('id', $order_id)->get()->first();
         
         if ($status == 'capture') {
             if ($type == 'credit_card') {
