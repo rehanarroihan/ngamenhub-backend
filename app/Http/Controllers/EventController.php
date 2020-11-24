@@ -154,7 +154,7 @@ class EventController extends Controller
     public function accept(Request $request) {
         $validator = Validator::make($request->all(), [
             'event_id' => 'required',
-            'user_id' => 'required',
+            'candidate_id' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -162,20 +162,15 @@ class EventController extends Controller
         }
 
         try {
-            // Updating candidate status accepted=1, rejected=2
-            Candidate::where([
-                'event_id' => $request->event_id,
-            ])
-            ->update([
-                'status' => '2'
-            ]);
-            Candidate::where([
-                'event_id' => $request->event_id,
-                'user_id' => $request->user_id
-            ])
-            ->update([
-                'status' => '1'
-            ]);
+            // Updating candidate status 
+            // awaiting-confirmation=0, rejected=1, accepted=2, awaiting-payment=3, purchased=4 
+            Candidate::where('event_id', $request->event_id)
+                    ->where('user_id', '!=', $request->candidate_id)
+                    ->update(['status' => '1']);
+
+            Candidate::where('event_id', $request->event_id)
+                    ->where('user_id', $request->candidate_id)
+                    ->update(['status' => '2']);
 
             return ResponseFormatter::success(
                 null,

@@ -15,6 +15,24 @@ use Illuminate\Support\Facades\Notification;
 
 class TransactionController extends Controller
 {
+    public function all(Request $request) {
+        $id = $request->input('id');
+
+        if ($id) {
+            $transaction = Transaction::with(['event', 'customer', 'candidate'])->find($id);
+            if ($transaction) {
+                return ResponseFormatter::success(
+                    null,
+                    'Transaction detail fetched'
+                ); 
+            }
+        } else {
+            return ResponseFormatter::success(
+                Transaction::where('user_id', $request->user->id)->get(),
+                'Transaction list fetched'
+            ); 
+        }
+    }
 
     public function create(Request $request) {
         $validator = Validator::make($request->all(), [
@@ -62,7 +80,10 @@ class TransactionController extends Controller
             $transaction->save();
 
             return ResponseFormatter::success(
-                null,
+                Transaction::where('id', $transaction->id)
+                    ->with(['customer', 'candidate', 'event'])
+                    ->get()
+                    ->first(),
                 'Transaction created successfully'
             ); 
         } catch (Exception $e) {

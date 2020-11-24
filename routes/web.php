@@ -43,6 +43,7 @@ $router->group(['prefix' => 'v1/maps'], function () use ($router) {
 
 $router->group(['prefix' => 'v1/transaction'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->get('', ['uses' => 'TransactionController@all']);
         $router->post('checkout', ['uses' => 'TransactionController@create']);
     });
 });

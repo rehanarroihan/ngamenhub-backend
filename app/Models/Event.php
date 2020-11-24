@@ -35,4 +35,8 @@ class Event extends Model
     public function candidates() {
         return $this->hasMany(Candidate::class, 'event_id', 'id');
     }
+
+    public function transaction() {
+        return Transaction::where('event_id', 'id');
+    }
 }
