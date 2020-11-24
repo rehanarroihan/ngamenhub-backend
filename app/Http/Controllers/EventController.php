@@ -150,4 +150,39 @@ class EventController extends Controller
             return ResponseFormatter::error(null, $error, 500);
         }
     }
+
+    public function accept(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'event_id' => 'required',
+            'user_id' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            return ResponseFormatter::validatorFailed();
+        }
+
+        try {
+            // Updating candidate status accepted=1, rejected=2
+            Candidate::where([
+                'event_id' => $request->event_id,
+            ])
+            ->update([
+                'status' => '2'
+            ]);
+            Candidate::where([
+                'event_id' => $request->event_id,
+                'user_id' => $request->user_id
+            ])
+            ->update([
+                'status' => '1'
+            ]);
+
+            return ResponseFormatter::success(
+                null,
+                'Candidate accepted'
+            );
+        } catch (Exception $error) {
+            return ResponseFormatter::error(null, $error, 500);
+        }
+    }
 }

@@ -29,10 +29,8 @@ $router->group(['prefix' => 'v1/event'], function () use ($router) {
         $router->get('{event_id}', ['uses' => 'EventController@detail']);
         $router->post('', ['uses' => 'EventController@create']);
         $router->post('photos', ['uses' => 'EventController@upload']);
-        $router->post('/candidate/apply', ['uses' => 'EventController@apply']);
-        /* $router->get('/{event_id}}', ['uses' => 'ClassesController@enroll']);
-        $router->get('/candidates', ['uses' => 'ClassesController@delete']);
-        $router->get('/candidate/accept', ['uses' => 'ClassesController@delete']); */
+        $router->post('candidate/apply', ['uses' => 'EventController@apply']);
+        $router->post('candidate/accept', ['uses' => 'EventController@accept']);
     });
 });
 
@@ -42,3 +40,11 @@ $router->group(['prefix' => 'v1/maps'], function () use ($router) {
         $router->get('detail/{place_id}', ['uses' => 'MapsApiController@detail']);
     });
 });
+
+$router->group(['prefix' => 'v1/transaction'], function () use ($router) {
+    $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->post('checkout', ['uses' => 'TransactionController@create']);
+    });
+});
+
+$router->post('v1/transaction/callback', ['uses' => 'TransactionController@callback']);
