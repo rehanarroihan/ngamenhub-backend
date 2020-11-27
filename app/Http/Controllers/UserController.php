@@ -7,13 +7,14 @@ use App\Models\User;
 use App\Models\Portfolio;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function __construct() {}
 
     public function detail(Request $request) {
-        $user = User::where('id', $request->user->id)->first();
+        $user = User::where('id', $request->user->id);
 
         if (!$user) {
             return ResponseFormatter::error(
@@ -24,7 +25,7 @@ class UserController extends Controller
         }
         
         return ResponseFormatter::success(
-            $user,
+            $user->get()->first(),
             'User detail detail fetched',
             404
         );
@@ -55,10 +56,10 @@ class UserController extends Controller
         }
 
         try {
-            $user = User::where('id', $request->user->id)->update($updateData);
+            User::where('id', $request->user->id)->update($updateData);
 
             return ResponseFormatter::success(
-                $user,
+                User::where('id', $request->user->id)->get()->first(),
                 'User data updated successfully'
             ); 
         } catch (Exception $e) {
@@ -66,6 +67,39 @@ class UserController extends Controller
                 $e->getMessage(),
                 'Update user data failed'
             ); 
+        }
+    }
+
+    public function profilepict(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'picture' => 'mimes:jpeg,jpg,png,gif|required'
+        ]);
+
+        if ($validator->fails()) {
+			return ResponseFormatter::error($validator->errors()->all(), $request->all());
+        }
+
+        try {
+            $willUploadFile = ($request->file('picture'));
+
+            $fileName = time().$willUploadFile->getClientOriginalName();
+            $destinationPath = 'upload/profile';
+            $willUploadFile->move(storage_path($destinationPath), $fileName);
+
+            User::where('id', $request->user->id)->update([
+                'picture' => $fileName
+            ]);
+
+            return ResponseFormatter::success(
+                User::where('id', $request->user->id)->get()->first(),
+                'Profile picture updated successfully'
+            ); 
+        } catch (Exception $e) {
+            return ResponseFormatter::error(
+                $e->getMessage(),
+                'Update profile picture failed',
+                500
+            );
         }
     }
 
