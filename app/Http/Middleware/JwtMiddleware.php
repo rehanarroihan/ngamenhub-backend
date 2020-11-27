@@ -22,8 +22,8 @@ class JwtMiddleware
         if (!$token) {
             return response()->json([
                 'status' => false,
-                'message' => 'Bearer not provided',
-                'data' => null
+                'message' => 'Unauthorized',
+                'data' => 'Bearer not provided'
             ], 401);
         }
         $token = explode(' ', $token);
@@ -31,8 +31,8 @@ class JwtMiddleware
         if (($token[0] !== 'Bearer') || !$token[1]) {
             return response()->json([
                 'status' => false,
-                'message' => 'Bearer not provided',
-                'data' => null
+                'message' => 'Unauthorized',
+                'data' => 'Bearer not provided'
             ], 401);
         }
 
@@ -41,14 +41,15 @@ class JwtMiddleware
         } catch (ExpiredException $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Auth token expired'
-            ], 400);
+                'message' => 'Unauthorized',
+                'data' => 'Auth token expired'
+            ], 401);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => 'An error with auth token',
-                'data' => null
-            ], 400);
+                'message' => 'Unauthorized',
+                'data' => 'An error with auth token'
+            ], 401);
         }
 
         $users = User::where('email', $credentials->sub->email)->first();
@@ -56,8 +57,8 @@ class JwtMiddleware
         if (!$users) {
             return response()->json([
                 'status' => false,
-                'message' => 'User with bearer not match',
-                'data' => null
+                'message' => 'Unauthorized',
+                'data' => 'User with bearer not match'
             ], 400);
         }
 

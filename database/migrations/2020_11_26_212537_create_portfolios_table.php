@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTransactionsTable extends Migration
+class CreatePortfoliosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,15 @@ class CreateTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('portfolios', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
-            $table->integer('candidate_id');
-            $table->integer('event_id');
-            $table->string('status');
-            $table->text('payment_url')->nullable();
+            $table->text('video_file_name');
             $table->timestamps();
         });
 
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->foreign('candidate_id')->references('id')->on('users')->onDelete('cascade');
+        Schema::table('portfolios', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });
     }
 
@@ -37,6 +32,6 @@ class CreateTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('portfolios');
     }
 }

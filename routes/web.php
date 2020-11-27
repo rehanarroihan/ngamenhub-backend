@@ -18,9 +18,17 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'v1/auth'], function () use ($router) {
-    $router->post('register', ['uses' => 'UserController@register']);
-    $router->post('login', ['uses' => 'UserController@login']);
-    $router->post('forgot-password', ['uses' => 'UserController@forgot']);
+    $router->post('register', ['uses' => 'AuthController@register']);
+    $router->post('login', ['uses' => 'AuthController@login']);
+    $router->post('forgot-password', ['uses' => 'AuthController@forgot']);
+});
+
+$router->group(['prefix' => 'v1/user'], function () use ($router) {
+    $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->get('me ', ['uses' => 'UserController@detail']);
+        $router->put('', ['uses' => 'UserController@update']);
+        $router->post('portofolio/upload', ['uses' => 'UserController@portfolio']);
+    });
 });
 
 $router->group(['prefix' => 'v1/event'], function () use ($router) {

@@ -2,105 +2,104 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\User;
-use Firebase\JWT\JWT;
+use App\Models\Portfolio;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function __construct() {
+    public function __construct() {}
 
+    public function detail(Request $request) {
+        $user = User::where('id', $request->user->id)->first();
+
+        if (!$user) {
+            return ResponseFormatter::error(
+                null,
+                'User not found',
+                404
+            );
+        }
+        
+        return ResponseFormatter::success(
+            $user,
+            'User detail detail fetched',
+            404
+        );
     }
 
-    public function register(Request $request) {
-        $validator = Validator::make($request->all(), [
-			'email' => 'email|required|unique:users,email',
-			'password' => 'required',
-			'role' => 'required',
-			'phone' => 'required',
-			'full_name' => 'required'
-		]);
+    public function update(Request $request) {
+        $picture = $request->picture;
+        $skills = $request->skills;
+        $full_name = $request->full_name;
+        $bio = $request->bio;
 
-		if ($validator->fails()) {
-            if ($validator->messages('email')->first() == 'The email has already been taken.') {
-                return ResponseFormatter::error(
-                    null,
-                    'Email already registered',
-                    500
-                );
-            }
+        $updateData = array();
 
+        if ($picture) {
+            $updateData['picture'] = $picture;
+        }
+
+        if ($skills) {
+            $updateData['skills'] = $skills;
+        }
+
+        if ($full_name) {
+            $updateData['full_name'] = $full_name;
+        }
+
+        if ($bio) {
+            $updateData['bio'] = $bio;
+        }
+
+        try {
+            $user = User::where('id', $request->user->id)->update($updateData);
+
+            return ResponseFormatter::success(
+                $user,
+                'User data updated successfully'
+            ); 
+        } catch (Exception $e) {
+            return ResponseFormatter::error(
+                $e->getMessage(),
+                'Update user data failed'
+            ); 
+        }
+    }
+
+    public function portfolio(Request $request) {
+        if (!is_array($request->file('video'))) {
             return ResponseFormatter::validatorFailed();
         }
 
         try {
-            User::create([
-                'full_name' => $request->full_name,
-                'email' => $request->email,
-                'role' => $request->role,
-                'phone' => $request->phone,
-                'password' => md5($request->password),
+            $file_count = count($request->file('video'));
+            $a = ($request->file('video'));
+            $finalArray = array();
+            for ($i=0; $i < $file_count; $i++) {
+                $fileName = time().$a[$i]->getClientOriginalName();
+                $destinationPath = 'upload/portfolio';
+                $finalArray[$i] = $fileName;
+                $a[$i]->move(storage_path($destinationPath), $fileName);
+            }
+
+            $insert = Portfolio::create([
+                'user_id' => $request->user->id,
+                'video_file_name' => $request->description,
             ]);
-    
-            $user = User::where('email', $request->email)->first();
-            
+
             return ResponseFormatter::success(
-                $user,
-                'User registration successful'
+                $insert,
+                'Portfolio created'
             );
-        } catch (Exception $error) {
+        } catch (Exception $e) {
             return ResponseFormatter::error(
-                null,
-                $error,
+                $e->getMessage(),
+                'Create portfolio failed',
                 500
             );
         }
-    }
-
-    public function login(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required',
-            'password' => 'required',
-		]);
-		
-		if ($validator->fails()) {
-			return ResponseFormatter::validatorFailed();
-        }
-        
-        $userRegistered = User::where([
-			'email' => $request->email,
-			'password' => md5($request->password)
-		])->first();
-		if (!$userRegistered) {
-			return ResponseFormatter::error(
-                null,
-                'Invalid email or password',
-                401
-            );
-        }
-
-        return ResponseFormatter::success(
-            [
-                'detail' => $userRegistered,
-                'token' => $this->jwt($userRegistered)
-            ],
-            'Login successful'
-        );
-    }
-
-    public function forgot(Request $request) {
-
-    }
-
-    private function jwt(User $user) {
-        $payload = [
-            'iss'   => 'ngamenhub-api',
-            'sub'   => $user,
-            'iat'   => time(),
-            'exp'   => time() + (24 * 60 * 60 * 7)
-        ];
-        return JWT::encode($payload, env('JWT_KEY'));
     }
 }

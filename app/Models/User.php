@@ -13,21 +13,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'role', 'full_name', 'email', 'phone', 'password'
+        'role', 'full_name', 'email', 'phone',
+        'password', 'bio', 'skills', 'picture'
     ];
+    
+    protected $hidden = ['password'];
 
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-    ];
+    public function portofolios() {
+        return $this->hasMany(Portofolios::class, 'user_id', 'id');
+    }
 }
