@@ -104,24 +104,23 @@ class UserController extends Controller
     }
 
     public function portfolio(Request $request) {
-        if (!is_array($request->file('video'))) {
-            return ResponseFormatter::validatorFailed();
+        $validator = Validator::make($request->all(), [
+            'video' => 'mimes:mp4,mov,ogg,qt|required|max:10240'
+        ]);
+
+        if ($validator->fails()) {
+			return ResponseFormatter::error($validator->errors()->all(), $request->all());
         }
 
         try {
-            $file_count = count($request->file('video'));
-            $a = ($request->file('video'));
-            $finalArray = array();
-            for ($i=0; $i < $file_count; $i++) {
-                $fileName = time().$a[$i]->getClientOriginalName();
-                $destinationPath = 'upload/portfolio';
-                $finalArray[$i] = $fileName;
-                $a[$i]->move(storage_path($destinationPath), $fileName);
-            }
+            $willUploadFile = ($request->file('video'));
+            $fileName = time().$willUploadFile->getClientOriginalName();
+            $destinationPath = 'upload/portfolio';
+            $willUploadFile->move(storage_path($destinationPath), $fileName);
 
             $insert = Portfolio::create([
                 'user_id' => $request->user->id,
-                'video_file_name' => $request->description,
+                'video_file_name' => $fileName,
             ]);
 
             return ResponseFormatter::success(
