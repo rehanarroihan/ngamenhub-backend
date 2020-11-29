@@ -22,7 +22,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     
     protected $hidden = ['password'];
 
-    public function portofolios() {
+    public function portfolios() {
         return $this->hasMany(Portfolio::class, 'user_id', 'id');
     }
 

@@ -83,7 +83,7 @@ class AuthController extends Controller
 
         return ResponseFormatter::success(
             [
-                'detail' => $userRegistered,
+                'detail' => User::where('email', $request->email)->with(['portfolios', 'groups'])->get()->first(),
                 'token' => $this->jwt($userRegistered)
             ],
             'Login successful'

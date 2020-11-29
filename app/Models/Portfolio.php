@@ -11,7 +11,8 @@ class Portfolio extends Model
     protected $guard = ['id'];
 
     protected $fillable = [
-        'user_id', 'video_file_name'
+        'user_id',
+        'video_file_name'
     ];
 
     public function users() {

@@ -28,7 +28,7 @@ $router->group(['prefix' => 'v1/user'], function () use ($router) {
         $router->get('me', ['uses' => 'UserController@detail']);
         $router->put('', ['uses' => 'UserController@update']);
         $router->post('picture/upload', ['uses' => 'UserController@profilepict']);
-        $router->post('portofolio/upload', ['uses' => 'UserController@portfolio']);
+        $router->post('portfolio/upload', ['uses' => 'UserController@portfolio']);
     });
 });
 

@@ -14,7 +14,7 @@ class UserController extends Controller
     public function __construct() {}
 
     public function detail(Request $request) {
-        $user = User::where('id', $request->user->id)->with(['portofolios', 'groups']);
+        $user = User::where('id', $request->user->id)->with(['portfolios', 'groups']);
 
         if (!$user) {
             return ResponseFormatter::error(
@@ -59,7 +59,7 @@ class UserController extends Controller
             User::where('id', $request->user->id)->update($updateData);
 
             return ResponseFormatter::success(
-                User::where('id', $request->user->id)->get()->first(),
+                User::where('id', $request->user->id)->with(['portfolios', 'groups'])->get()->first(),
                 'User data updated successfully'
             ); 
         } catch (Exception $e) {
