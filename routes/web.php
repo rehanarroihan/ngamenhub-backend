@@ -63,3 +63,12 @@ $router->group(['prefix' => 'v1/transaction'], function () use ($router) {
     $router->get('unfinish', ['uses' => 'TransactionController@unfinish']); 
     $router->get('error', ['uses' => 'TransactionController@error']); 
 });
+
+$router->group(['prefix' => 'v1/group'], function () use ($router) {
+    $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->post('', ['uses' => 'GroupController@create']);
+        $router->post('join', ['uses' => 'GroupController@joinbycode']);
+        $router->get('', ['uses' => 'GroupController@mygroups']);
+        $router->get('{group_id}', ['uses' => 'GroupController@groupdetail']);
+    });
+});

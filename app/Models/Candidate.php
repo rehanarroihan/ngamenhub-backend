@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
 {
+    protected $table = "candidates";
+
     protected $guard = ['id'];
+
     protected $fillable = [
         'user_id',
         'event_id',
@@ -30,6 +33,6 @@ class Candidate extends Model
     }
 
     public function userDetail() {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

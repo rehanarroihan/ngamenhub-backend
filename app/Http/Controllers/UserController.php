@@ -14,7 +14,7 @@ class UserController extends Controller
     public function __construct() {}
 
     public function detail(Request $request) {
-        $user = User::where('id', $request->user->id);
+        $user = User::where('id', $request->user->id)->with(['portofolios', 'groups']);
 
         if (!$user) {
             return ResponseFormatter::error(

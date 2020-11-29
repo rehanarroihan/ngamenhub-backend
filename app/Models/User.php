@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Portfolio;
+use App\Models\Group;
 use Laravel\Lumen\Auth\Authorizable;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
@@ -21,9 +22,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     
     protected $hidden = ['password'];
 
-    protected $with = ['portofolios'];
-
     public function portofolios() {
         return $this->hasMany(Portfolio::class, 'user_id', 'id');
+    }
+
+    public function groups() {
+        return $this->belongsToMany(Group::class, 'group_members', 'user_id', 'group_id');
     }
 }
