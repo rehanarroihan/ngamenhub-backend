@@ -26,7 +26,6 @@ $router->group(['prefix' => 'v1/auth'], function () use ($router) {
 $router->group(['prefix' => 'v1/user'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
         $router->get('me', ['uses' => 'UserController@detail']);
-        $router->get('{user_id}', ['uses' => 'UserController@userdetail']);
         $router->put('', ['uses' => 'UserController@update']);
         $router->post('picture/upload', ['uses' => 'UserController@profilepict']);
         $router->post('portfolio/upload', ['uses' => 'UserController@portfolio']);
@@ -41,6 +40,7 @@ $router->group(['prefix' => 'v1/event'], function () use ($router) {
         $router->post('photos', ['uses' => 'EventController@upload']);
         $router->post('candidate/apply', ['uses' => 'EventController@apply']);
         $router->post('candidate/accept', ['uses' => 'EventController@accept']);
+        $router->get('candidate/{user_id}', ['uses' => 'UserController@userdetail']);
     });
 });
 
@@ -54,6 +54,7 @@ $router->group(['prefix' => 'v1/maps'], function () use ($router) {
 $router->group(['prefix' => 'v1/transaction'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
         $router->get('', ['uses' => 'TransactionController@all']);
+        $router->get('detail/{transaction_id}', ['uses' => 'TransactionController@detail']);
         $router->post('checkout', ['uses' => 'TransactionController@create']);
     });
 });

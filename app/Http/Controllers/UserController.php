@@ -26,8 +26,8 @@ class UserController extends Controller
         
         return ResponseFormatter::success(
             $user->get()->first(),
-            'User detail detail fetched',
-            404
+            'User detail fetched',
+            200
         );
     }
 
@@ -38,15 +38,15 @@ class UserController extends Controller
         if (!$user) {
             return ResponseFormatter::error(
                 null,
-                'User not found',
+                'Candidate not found',
                 404
             );
         }
         
         return ResponseFormatter::success(
             $user->get()->first(),
-            'User detail detail fetched',
-            404
+            'Candidate detail fetched',
+            200
         );
     }
 

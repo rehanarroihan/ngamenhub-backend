@@ -34,6 +34,26 @@ class TransactionController extends Controller
         }
     }
 
+    public function detail($transaction_id) {
+        $transaction = Transaction::where('id', $transaction_id)->get()->first();
+
+        if (!$transaction) {
+            return ResponseFormatter::error(
+                null,
+                'Transaction not found',
+                404
+            );
+        }
+
+        return ResponseFormatter::success(
+            Transaction::where('id', $transaction_id)
+                ->with(['customer', 'candidate', 'event'])
+                ->get()
+                ->first(),
+            'Transaction detail fetched'
+        ); 
+    }
+
     public function create(Request $request) {
         $validator = Validator::make($request->all(), [
 			'event_id'      => 'required|exists:events,id',
