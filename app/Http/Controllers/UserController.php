@@ -31,6 +31,25 @@ class UserController extends Controller
         );
     }
 
+    public function userdetail($user_id) {
+        // For candidate
+        $user = User::where('id', $user_id)->with(['portfolios']);
+
+        if (!$user) {
+            return ResponseFormatter::error(
+                null,
+                'User not found',
+                404
+            );
+        }
+        
+        return ResponseFormatter::success(
+            $user->get()->first(),
+            'User detail detail fetched',
+            404
+        );
+    }
+
     public function update(Request $request) {
         $picture = $request->picture;
         $skills = $request->skills;
