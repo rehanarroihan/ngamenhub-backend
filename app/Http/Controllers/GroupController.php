@@ -61,17 +61,6 @@ class GroupController extends Controller
         }
     }
 
-    public function mygroups(Request $request) {
-        $query = GroupMember::where('user_id', $request->user->id)
-                    ->with(['groupDetail'])
-                    ->get();
-
-        return ResponseFormatter::success(
-            $query,
-            'Get group list successful'
-        );
-    }
-
     public function groupdetail($group_id) {
         $group = Group::where('id', $group_id);
 
