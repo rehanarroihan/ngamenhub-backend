@@ -31,10 +31,10 @@ class EventController extends Controller
         );
     }
 
-    public function detail(Request $request, $event_id) {
+    public function detail($event_id) {
         $result = Event::where([
 			'id' => $event_id
-		])->first();
+		])->with(['transaction'])->first();
         return ResponseFormatter::success(
             $result,
             'Get event detail completed'

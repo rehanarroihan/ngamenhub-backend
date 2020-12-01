@@ -68,7 +68,7 @@ class TransactionController extends Controller
             'user_id'       => $request->user->id,
             'candidate_id'  => $request->candidate_id,
             'event_id'      => $request->event_id,
-            'status'        => 'PENDING',
+            'status'        => 'DATA_CREATED',
             'payment_url'   => '',
         ]);
 

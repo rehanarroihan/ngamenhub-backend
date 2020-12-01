@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Candidate;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
@@ -29,10 +30,18 @@ class Event extends Model
 
     protected $with = ['candidates'];
 
-    protected $appends = ['candidate_count'];
+    protected $appends = ['candidate_count', 'transaction_id'];
 
     public function getCandidateCountAttribute() {
         return count($this->candidates);
+    }
+
+    public function getTransactionIdAttribute() {
+        if ($this->transaction) {
+            return $this->transaction->id;
+        } else {
+            return null;
+        }
     }
 
     public function candidates() {
@@ -40,6 +49,6 @@ class Event extends Model
     }
 
     public function transaction() {
-        return Transaction::where('event_id', 'id');
+        return $this->hasOne(Transaction::class, 'event_id');
     }
 }
