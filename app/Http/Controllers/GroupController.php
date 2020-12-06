@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\GroupMember;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
 class GroupController extends Controller
@@ -59,6 +60,15 @@ class GroupController extends Controller
                 500
             );
         }
+    }
+
+    public function me(Request $request) {
+        $user = User::where('id', $request->user->id);
+        return ResponseFormatter::success(
+            $user->get()->first()->groups,
+            'Group detail fetched',
+            404
+        );
     }
 
     public function groupdetail($group_id) {

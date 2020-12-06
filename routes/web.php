@@ -68,6 +68,7 @@ $router->group(['prefix' => 'v1/transaction'], function () use ($router) {
 
 $router->group(['prefix' => 'v1/group'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->get('', ['uses' => 'GroupController@me']);
         $router->post('', ['uses' => 'GroupController@create']);
         $router->post('join', ['uses' => 'GroupController@joinbycode']);
         $router->get('{group_id}', ['uses' => 'GroupController@groupdetail']);
