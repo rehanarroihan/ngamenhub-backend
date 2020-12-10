@@ -124,7 +124,7 @@ class UserController extends Controller
 
     public function portfolio(Request $request) {
         $validator = Validator::make($request->all(), [
-            'video' => 'mimes:mp4,mov,ogg,qt|required|max:10240'
+            'video' => 'mimes:mp4,mov,ogg,qt|required|max:5120'
         ]);
 
         if ($validator->fails()) {
