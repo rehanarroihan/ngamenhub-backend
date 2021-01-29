@@ -36,6 +36,7 @@ $router->group(['prefix' => 'v1/event'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
         $router->get('', ['uses' => 'EventController@get']);
         $router->get('{event_id}', ['uses' => 'EventController@detail']);
+        $router->delete('{event_id}', ['uses' => 'EventController@delete']);
         $router->post('', ['uses' => 'EventController@create']);
         $router->post('photos', ['uses' => 'EventController@upload']);
         $router->post('candidate/apply', ['uses' => 'EventController@apply']);

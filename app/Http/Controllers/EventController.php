@@ -41,6 +41,33 @@ class EventController extends Controller
         );
     }
 
+    public function delete($event_id) {
+        $event = Event::find($event_id);
+
+        if (!$event) {
+            return ResponseFormatter::error(
+                null,
+                'Event not found',
+                500
+            );
+        }
+
+        try {
+            $event->delete();
+
+            return ResponseFormatter::success(
+                null,
+                'Event deleted successfully'
+            );
+        } catch (Exception $error) {
+            return ResponseFormatter::error(
+                null,
+                $error,
+                500
+            );
+        }
+    }
+
     public function create(Request $request) {
         // return $request->all();
         $validator = Validator::make($request->all(), [
