@@ -41,10 +41,18 @@ class EventController extends Controller
         );
     }
 
-    public function delete($event_id) {
+    public function delete(Request $request, $event_id) {
         $event = Event::find($event_id);
 
         if (!$event) {
+            return ResponseFormatter::error(
+                null,
+                'Event not found',
+                500
+            );
+        }
+
+        if ($event->created_by != $request->user->id) {
             return ResponseFormatter::error(
                 null,
                 'Event not found',
