@@ -75,3 +75,10 @@ $router->group(['prefix' => 'v1/group'], function () use ($router) {
         $router->get('{group_id}', ['uses' => 'GroupController@groupdetail']);
     });
 });
+
+$router->group(['prefix' => 'v1/chat'], function () use ($router) {
+    $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+        $router->get('room', ['uses' => 'PersonalChatController@room']);
+        $router->get('rooms', ['uses' => 'PersonalChatController@rooms']);
+    });
+});

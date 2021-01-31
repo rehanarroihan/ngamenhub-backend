@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\User;
 use App\Models\Group;
 use App\Models\GroupMember;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class GroupController extends Controller
