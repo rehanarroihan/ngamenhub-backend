@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Group;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use App\Models\Candidate;
@@ -34,7 +35,20 @@ class EventController extends Controller
     public function detail($event_id) {
         $result = Event::where([
 			'id' => $event_id
-		])->with(['transaction'])->first();
+        ])->with(['transaction'])->first();
+        
+        if (count($result->candidates) > 0) {
+            for ($i = 0; $i<count($result->candidates); $i++) {
+                if ($result->candidates[$i]->group_id != null) {
+                    $result->candidates[$i]->group = Group::where([
+                        'id' => $result->candidates[$i]->group_id
+                    ])->without(['members'])->first();
+                } else {
+                    $result->candidates[$i]->group = null;
+                }
+            }
+        }
+
         return ResponseFormatter::success(
             $result,
             'Get event detail completed'
@@ -161,7 +175,7 @@ class EventController extends Controller
             return ResponseFormatter::error(null, 'Event not found', 500);
         }
 
-        // Checking duplication
+        // Checking duplication (user)
         $application = Candidate::where('user_id', $request->user->id)
                     ->where('event_id', $request->event_id)
                     ->first();
@@ -169,10 +183,20 @@ class EventController extends Controller
         if ($application) {
             return ResponseFormatter::error(null, 'User already applied before', 500);
         }
+
+        // Checking duplication (group)
+        $applicationGroup = Candidate::where('group_id', $request->group_id)
+                    ->where('event_id', $request->event_id)
+                    ->first();
+
+        if ($applicationGroup) {
+            return ResponseFormatter::error(null, 'Group already applied before', 500);
+        }
         
         try {
             $application = Candidate::create([
                 'user_id' => $request->user->id,
+                'group_id' => $request->group_id,
                 'event_id' => $request->event_id,
                 'status' => '0'
             ]);

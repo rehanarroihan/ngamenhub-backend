@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Models\Event;
+use App\Models\Group;
 use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
@@ -12,6 +13,7 @@ class Candidate extends Model
 
     protected $fillable = [
         'user_id',
+        'group_id',
         'event_id',
         'status',
     ];

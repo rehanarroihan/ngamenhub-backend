@@ -17,6 +17,7 @@ class CreateCandidatesTable extends Migration
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
             $table->integer('event_id');
+            $table->integer('group_id')->nullable();
             $table->string('status');
             $table->timestamps();
         });
