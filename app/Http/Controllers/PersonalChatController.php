@@ -11,6 +11,36 @@ use Illuminate\Support\Facades\Validator;
 
 class PersonalChatController extends Controller
 {
+    public function rooms(Request $request) {
+        $a = DB::table('personal_chat_rooms as rc')
+            ->where('rc.creator', $request->user->id);
+        
+        $b = DB::table('personal_chat_rooms as rc')
+            ->where('rc.target', $request->user->id)
+            ->union($a)->get();
+
+        $result = array();
+        if (count($b) > 0) {
+            for ($i = 0; $i<count($b); $i++) {
+                $userId = $b[$i]->creator;
+
+                if ($b[$i]->creator == $request->user->id) {
+                    $userId = $b[$i]->target;
+                }
+
+                array_push($result, (object) array(
+                    'room_id' => $b[$i]->firebase_chat_room_id,
+                    'user' => User::where('id', $userId)->first()
+                ));
+            }
+        }
+
+        return ResponseFormatter::success(
+            $result,
+            'Chat rooms fetched'
+        );
+    }
+
     public function room(Request $request) {
         $validator = Validator::make($request->all(), [
 			'creator_user_id' => 'required',
