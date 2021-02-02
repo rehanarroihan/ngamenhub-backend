@@ -61,12 +61,18 @@ class TransactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-			return ResponseFormatter::error($validator->errors()->all(), $request->all());
+			return ResponseFormatter::error(
+                $validator->errors()->all(), 
+                $request->all()
+            );
         }
 
+        $invoiceCode = date("ymdhms").rand(pow(10, 3-1), pow(10, 3)-1);
         $transaction = Transaction::create([
             'user_id'       => $request->user->id,
+            'invoice_code'  => $invoiceCode,
             'candidate_id'  => $request->candidate_id,
+            'group_id'      => $request->group_id,
             'event_id'      => $request->event_id,
             'status'        => 'DATA_CREATED',
             'payment_url'   => '',
@@ -82,7 +88,7 @@ class TransactionController extends Controller
 
         $midtransRequestData = [
             'transaction_details' => [
-                'order_id'      => $transaction->id,
+                'order_id'      => $invoiceCode,
                 'gross_amount'  => (int) $eventDetail->fee,
             ],
             'customer_details' => [
@@ -127,10 +133,17 @@ class TransactionController extends Controller
         $fraud = $notification->fraud_status;
         $order_id = $notification->order_id;
 
-        $transaction = Transaction::where('id', $order_id)->get()->first();
+        $transaction = Transaction::where('invoice_code', $order_id)->get()->first();
         
         if ($status == 'capture') {
             if ($type == 'credit_card') {
+                if ($fraud == 'challenge') {
+                    $transaction->status = 'PENDING';
+                } else {
+                    $transaction->status = 'SUCCESS';
+                }
+            }
+            if ($type == 'bank_transfer') {
                 if ($fraud == 'challenge') {
                     $transaction->status = 'PENDING';
                 } else {

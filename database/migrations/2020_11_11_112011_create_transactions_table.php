@@ -15,8 +15,10 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
+            $table->string('invoice_code');
             $table->integer('user_id');
             $table->integer('candidate_id');
+            $table->integer('candidate_group_id')->nullable();
             $table->integer('event_id');
             $table->string('status');
             $table->text('payment_url')->nullable();
