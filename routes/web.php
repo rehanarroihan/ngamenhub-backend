@@ -26,6 +26,7 @@ $router->group(['prefix' => 'v1/auth'], function () use ($router) {
 $router->group(['prefix' => 'v1/user'], function () use ($router) {
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
         $router->get('me', ['uses' => 'UserController@detail']);
+        $router->get('jobs', ['uses' => 'EventController@getJobs']);
         $router->put('', ['uses' => 'UserController@update']);
         $router->post('picture/upload', ['uses' => 'UserController@profilepict']);
         $router->post('portfolio/upload', ['uses' => 'UserController@portfolio']);

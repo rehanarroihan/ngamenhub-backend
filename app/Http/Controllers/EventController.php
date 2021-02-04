@@ -32,6 +32,20 @@ class EventController extends Controller
         );
     }
 
+    public function getJobs(Request $request) {
+        $userAppliedEvent = Candidate::where(['user_id', $request->user->id]);
+
+        $result = array();
+        foreach ($userAppliedEvent as $cnd) {
+            array_push($result = Event::findOne('id', $cnd->event_id));
+        }
+        
+        return ResponseFormatter::success(
+            $result,
+            'Event list fetch completed'
+        );
+    }
+
     public function detail($event_id) {
         $result = Event::where([
 			'id' => $event_id
@@ -224,11 +238,11 @@ class EventController extends Controller
             // Updating candidate status 
             // awaiting-confirmation=0, rejected=1, accepted=2, awaiting-payment=3, purchased=4 
             Candidate::where('event_id', $request->event_id)
-                    ->where('user_id', '!=', $request->candidate_id)
+                    ->where('id', '!=', $request->candidate_id)
                     ->update(['status' => '1']);
 
             Candidate::where('event_id', $request->event_id)
-                    ->where('user_id', $request->candidate_id)
+                    ->where('id', $request->candidate_id)
                     ->update(['status' => '2']);
 
             return ResponseFormatter::success(
