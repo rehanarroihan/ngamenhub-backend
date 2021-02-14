@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\User;
+use App\Models\Event;
 use App\Models\Portfolio;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\Validator;
@@ -156,6 +158,46 @@ class UserController extends Controller
     }
 
     public function getBalance(Request $request) {
-        
+        $result = (object) array(
+            'balance'     => '',
+            'histories'   => array(),
+        );
+
+        $paidTransaction = Transaction::where([
+            'candidate_id' => $request->user->id,
+            'status' => 'SUCCESS'
+        ])
+        ->with(['event']);
+
+        // Getting income (debit) of logged in user from trx table
+        foreach ($paidTransaction as $paidTrx) {
+            $history = (object) array(
+                'amount'   => (int) $paidTrx->event->fee,
+                'type'     => 'debit',
+                'date'     => $paidTrx->updated_at 
+            );
+            array_push($result->histories, $history);
+        }
+
+        // Getting outcome (credit) of user from withdraw table
+        // TODO: write the code in future
+
+        // Counting for balance value
+        $balance = 0;
+        foreach ($result->histories as $hist) {
+            if ($hist->type == 'debit') {
+                $balance = $balance + $hist;
+            } else if ($hist->type == 'credit') {
+                $balance = $balance - $hist;
+            }
+        }
+
+        $result->balance = $balance;
+
+
+        return ResponseFormatter::success(
+            $result,
+            'Balance data fetched'
+        );
     }
 }
