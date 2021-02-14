@@ -236,7 +236,7 @@ class EventController extends Controller
 
         try {
             // Updating candidate status 
-            // awaiting-confirmation=0, rejected=1, accepted=2, awaiting-payment=3, purchased=4 
+            // awaiting-confirmation=0, rejected=1, accepted=2, awaiting-payment=3, purchased=4,finished=5
             Candidate::where('event_id', $request->event_id)
                     ->where('id', '!=', $request->candidate_id)
                     ->update(['status' => '1']);
@@ -248,6 +248,66 @@ class EventController extends Controller
             return ResponseFormatter::success(
                 null,
                 'Candidate accepted'
+            );
+        } catch (Exception $error) {
+            return ResponseFormatter::error(null, $error, 500);
+        }
+    }
+
+    public function finish(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'event_id' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            return ResponseFormatter::validatorFailed();
+        }
+
+        try {
+            $event = Event::findOne('id', $request->event_id);
+
+            if (!$event) {
+                return ResponseFormatter::error(
+                    null,
+                    'Event not found',
+                    500
+                );
+            }
+
+            if ($event->created_by != $request->user->id) {
+                return ResponseFormatter::error(
+                    null,
+                    'Event not found',
+                    500
+                );
+            }
+
+            $candidate = Candidate::where('event_id', $request->event_id)
+                            ->where('status', '4')->first();
+
+            if (!$candidate) {
+                return ResponseFormatter::error(
+                    null,
+                    'Action cannot be undone',
+                    500
+                );
+            }
+
+            if ($candidate->status == '5') {
+                return ResponseFormatter::error(
+                    null,
+                    'Event and candidate has finished already',
+                    500
+                );
+            }
+
+            $candidate->status = 5;
+
+            $candidate->save();
+
+            return ResponseFormatter::success(
+                null,
+                'Finish event action successful'
             );
         } catch (Exception $error) {
             return ResponseFormatter::error(null, $error, 500);

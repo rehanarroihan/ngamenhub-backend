@@ -154,4 +154,8 @@ class UserController extends Controller
             );
         }
     }
+
+    public function getBalance(Request $request) {
+        
+    }
 }
