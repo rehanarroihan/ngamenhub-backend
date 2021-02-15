@@ -9,6 +9,7 @@ use App\Models\Portfolio;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use App\Models\Candidate;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -163,18 +164,18 @@ class UserController extends Controller
             'histories'   => array(),
         );
 
-        $paidTransaction = Transaction::where([
-            'candidate_id' => $request->user->id,
-            'status' => 'SUCCESS'
-        ])
-        ->with(['event']);
+        $paidTransaction = Candidate::where([
+            'user_id' => $request->user->id,
+            'status' => '5'
+        ])->with(['event']);
 
         // Getting income (debit) of logged in user from trx table
         foreach ($paidTransaction as $paidTrx) {
             $history = (object) array(
-                'amount'   => (int) $paidTrx->event->fee,
-                'type'     => 'debit',
-                'date'     => $paidTrx->updated_at 
+                'amount'        => (int) $paidTrx->event->fee,
+                'type'          => 'debit',
+                'date'          => $paidTrx->updated_at,
+                'event_name'    => $paidTrx->event->name
             );
             array_push($result->histories, $history);
         }

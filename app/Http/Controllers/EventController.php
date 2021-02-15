@@ -33,11 +33,21 @@ class EventController extends Controller
     }
 
     public function getJobs(Request $request) {
-        $userAppliedEvent = Candidate::where(['user_id', $request->user->id]);
+        $userAppliedEvent = Candidate::where('user_id', $request->user->id)->get();
 
         $result = array();
         foreach ($userAppliedEvent as $cnd) {
-            array_push($result = Event::findOne('id', $cnd->event_id));
+            $eventDetail = Event::where('id', $cnd->event_id)->get()->first();
+
+            $job = array(
+                'event_id'  => $eventDetail->id,
+                'status'    => $cnd->status,
+                'type'      => $eventDetail->type,
+                'date'      => $eventDetail->type,
+                'name'      => $eventDetail->address['name']
+            );
+
+            array_push($result, $job);
         }
         
         return ResponseFormatter::success(
