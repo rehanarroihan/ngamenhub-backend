@@ -43,7 +43,7 @@ class EventController extends Controller
                 'event_id'  => $eventDetail->id,
                 'status'    => $cnd->status,
                 'type'      => $eventDetail->type,
-                'date'      => $eventDetail->type,
+                'date'      => $eventDetail->date,
                 'name'      => $eventDetail->address['name']
             );
 
@@ -52,7 +52,7 @@ class EventController extends Controller
         
         return ResponseFormatter::success(
             $result,
-            'Event list fetch completed'
+            'Job list fetch completed'
         );
     }
 

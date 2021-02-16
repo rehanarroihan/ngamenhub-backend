@@ -167,17 +167,24 @@ class UserController extends Controller
         $paidTransaction = Candidate::where([
             'user_id' => $request->user->id,
             'status' => '5'
-        ])->with(['event']);
+        ])->with(['event'])->get();
 
         // Getting income (debit) of logged in user from trx table
         foreach ($paidTransaction as $paidTrx) {
-            $history = (object) array(
+            $eventFee = (object) array(
                 'amount'        => (int) $paidTrx->event->fee,
                 'type'          => 'debit',
                 'date'          => $paidTrx->updated_at,
-                'event_name'    => $paidTrx->event->name
+                'remarks'       => 'Fee event '.$paidTrx->event->name
             );
-            array_push($result->histories, $history);
+            array_push($result->histories, $eventFee);
+            $platformFeeOfEventFee = (object) array(
+                'amount'        => (int) $paidTrx->event->fee * 10 / 100,
+                'type'          => 'credit',
+                'date'          => $paidTrx->updated_at,
+                'remarks'       => 'Platform fee of '.$paidTrx->event->name
+            );
+            array_push($result->histories, $platformFeeOfEventFee);
         }
 
         // Getting outcome (credit) of user from withdraw table
@@ -187,9 +194,9 @@ class UserController extends Controller
         $balance = 0;
         foreach ($result->histories as $hist) {
             if ($hist->type == 'debit') {
-                $balance = $balance + $hist;
+                $balance = $balance + $hist->amount;
             } else if ($hist->type == 'credit') {
-                $balance = $balance - $hist;
+                $balance = $balance - $hist->amount;
             }
         }
 
