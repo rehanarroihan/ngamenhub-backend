@@ -209,15 +209,14 @@ class EventController extends Controller
         }
 
         // Checking duplication (group)
-        $applicationGroup = null;
         if ($request->group_id) {
             $applicationGroup = Candidate::where('group_id', $request->group_id)
                     ->where('event_id', $request->event_id)
                     ->first();
-        }
 
-        if ($applicationGroup) {
-            return ResponseFormatter::error(null, 'Group already applied before', 500);
+            if ($applicationGroup) {
+                return ResponseFormatter::error(null, 'Group already applied before', 500);
+            }
         }
         
         try {
