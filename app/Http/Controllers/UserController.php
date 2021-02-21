@@ -182,7 +182,7 @@ class UserController extends Controller
                 'amount'        => (int) $paidTrx->event->fee * 10 / 100,
                 'type'          => 'credit',
                 'date'          => $paidTrx->updated_at,
-                'remarks'       => 'Platform fee of '.$paidTrx->event->name
+                'remarks'       => 'Platform fee 10% of '.$paidTrx->event->name
             );
             array_push($result->histories, $platformFeeOfEventFee);
         }
