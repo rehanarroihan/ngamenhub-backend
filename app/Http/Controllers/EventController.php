@@ -276,7 +276,7 @@ class EventController extends Controller
         }
 
         try {
-            $event = Event::findOne('id', $request->event_id);
+            $event = Event::where('id', $request->event_id)->get()->first();
 
             if (!$event) {
                 return ResponseFormatter::error(
@@ -294,8 +294,10 @@ class EventController extends Controller
                 );
             }
 
-            $candidate = Candidate::where('event_id', $request->event_id)
-                            ->where('status', '4')->first();
+            $candidate = Candidate::where([
+                'event_id' => $request->event_id,
+                'status' => '4'
+            ])->get()->first();
 
             if (!$candidate) {
                 return ResponseFormatter::error(
