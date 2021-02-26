@@ -11,6 +11,7 @@ use App\Models\Event;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
+use App\Models\Candidate;
 use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
@@ -160,6 +161,15 @@ class TransactionController extends Controller
             $transaction->status = 'CANCELLED';
         } else if ($status == 'cancel') {
             $transaction->status = 'CANCELLED';
+        }
+
+        if ($transaction->status = 'SUCCESS') {
+            $candidate = Candidate::where([
+                'user_id' => $transaction->candidate_id,
+                'event_id' => $transaction->event_id,
+            ])->get()->first();
+            $candidate->status = '4';
+            $candidate->save();
         }
 
         $transaction->save();
