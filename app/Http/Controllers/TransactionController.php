@@ -163,7 +163,7 @@ class TransactionController extends Controller
             $transaction->status = 'CANCELLED';
         }
 
-        if ($transaction->status = 'SUCCESS') {
+        if ($status == 'settlement') {
             $candidate = Candidate::where([
                 'user_id' => $transaction->candidate_id,
                 'event_id' => $transaction->event_id,
